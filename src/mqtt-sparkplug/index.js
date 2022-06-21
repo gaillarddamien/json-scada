@@ -951,9 +951,16 @@ async function processMongoUpdates (clientMongo, collection, jsConfig) {
       // check tag is created, if not found create it
       if (AutoCreateTags) {
         let topicSplit = data.protocolSourceObjectAddress.split('/')
-        if (topicSplit.length > 0) data.group2 = topicSplit[0]
-        if (topicSplit.length > 1 && topicSplit[0] === SparkplugNS)
+        if (topicSplit.length > 0) {
+          data.group1 = topicSplit[0]
           data.group2 = topicSplit[1]
+          data.group3 = topicSplit[2]
+        }
+        if (topicSplit.length > 1 && topicSplit[0] === SparkplugNS) {
+          data.group1 = topicSplit[1]
+          data.group2 = topicSplit[2]
+          data.group3 = topicSplit[3]
+        }
         await AutoTag.AutoCreateTag(data, jsConfig.ConnectionNumber, collection)
       }
 
@@ -1917,6 +1924,10 @@ function queueMetric (metric, deviceLocator, isBirth, templateName) {
       catalogProperties.group3 = metric.properties?.group3?.value || ''
       if ('engUnit' in metric.properties)
         catalogProperties.unit = metric.properties.engUnit?.value || 'units'
+      if ('kconv1' in metric.properties)
+        catalogProperties.kconv1 = parseFloat(metric.properties.kconv1?.value) || 1.0
+      if ('kconv2' in metric.properties)
+        catalogProperties.kconv2 = parseFloat(metric.properties.kconv2?.value) || 0.0
     }
     catalogProperties.commissioningRemarks =
       'Auto created by Sparkplug B driver - ' + new Date().toISOString()
@@ -2095,7 +2106,7 @@ function topicStr (s) {
 }
 
 // invalidate tags from device or node based on Sparkplug B topic path
-function InvalidateDeviceTags (
+async function InvalidateDeviceTags (
   deviceTopicPath,
   mongoClient,
   jscadaConnection,
@@ -2106,13 +2117,30 @@ function InvalidateDeviceTags (
     Log.log('MongoDB - Invalidate tags from ' + deviceTopicPath)
     const db = mongoClient.db(configObj.mongoDatabaseName)
     const rtCollection = db.collection(configObj.RealtimeDataCollectionName)
-    rtCollection.updateMany(
+    // sourceDataUpdate needs to be populated for records to be inserted into postgre/timescaledb historian table
+    let updTag = {
+      valueAtSource: null,
+      valueStringAtSource: null,
+      valueJsonAtSource: null,
+      timeTagAtSource: new Date(),
+      timeTagAtSourceOk: true,
+      timeTag: new Date(),
+      originator: AppDefs.NAME + '|' + jscadaConnection.protocolConnectionNumber,
+      invalidAtSource: true,
+      transientAtSource: false,
+      notTopicalAtSource: false,
+      overflowAtSource: false,
+      blockedAtSource: false,
+      substitutedAtSource: false
+    }
+
+    await rtCollection.updateMany(
       {
         protocolSourceConnectionNumber:
           jscadaConnection.protocolConnectionNumber,
         protocolSourceObjectAddress: { $regex: '^' + deviceTopicPath }
       },
-      { $set: { invalid: true } }
+      { $set: { sourceDataUpdate: updTag } }
     )
   } catch (e) {
     Log.log(
