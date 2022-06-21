@@ -2106,7 +2106,7 @@ function topicStr (s) {
 }
 
 // invalidate tags from device or node based on Sparkplug B topic path
-function InvalidateDeviceTags (
+async function InvalidateDeviceTags (
   deviceTopicPath,
   mongoClient,
   jscadaConnection,
@@ -2117,13 +2117,30 @@ function InvalidateDeviceTags (
     Log.log('MongoDB - Invalidate tags from ' + deviceTopicPath)
     const db = mongoClient.db(configObj.mongoDatabaseName)
     const rtCollection = db.collection(configObj.RealtimeDataCollectionName)
-    rtCollection.updateMany(
+    // sourceDataUpdate needs to be populated for records to be inserted into postgre/timescaledb historian table
+    let updTag = {
+      valueAtSource: null,
+      valueStringAtSource: null,
+      valueJsonAtSource: null,
+      timeTagAtSource: new Date(),
+      timeTagAtSourceOk: true,
+      timeTag: new Date(),
+      originator: AppDefs.NAME + '|' + jscadaConnection.protocolConnectionNumber,
+      invalidAtSource: true,
+      transientAtSource: false,
+      notTopicalAtSource: false,
+      overflowAtSource: false,
+      blockedAtSource: false,
+      substitutedAtSource: false
+    }
+
+    await rtCollection.updateMany(
       {
         protocolSourceConnectionNumber:
           jscadaConnection.protocolConnectionNumber,
         protocolSourceObjectAddress: { $regex: '^' + deviceTopicPath }
       },
-      { $set: { invalid: true } }
+      { $set: { sourceDataUpdate: updTag } }
     )
   } catch (e) {
     Log.log(
