@@ -1917,6 +1917,10 @@ function queueMetric (metric, deviceLocator, isBirth, templateName) {
       catalogProperties.group3 = metric.properties?.group3?.value || ''
       if ('engUnit' in metric.properties)
         catalogProperties.unit = metric.properties.engUnit?.value || 'units'
+      if ('kconv1' in metric.properties)
+        catalogProperties.kconv1 = parseFloat(metric.properties.kconv1?.value) || 1.0
+      if ('kconv2' in metric.properties)
+        catalogProperties.kconv2 = parseFloat(metric.properties.kconv2?.value) || 0.0
     }
     catalogProperties.commissioningRemarks =
       'Auto created by Sparkplug B driver - ' + new Date().toISOString()

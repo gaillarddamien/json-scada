@@ -137,7 +137,7 @@ async function AutoCreateTag (data, connectionNumber, rtDataCollection) {
       })
       .toArray()
 
-    if ('length' in res && res.length === 0) {
+    if ('length' in res && res.length === 0) { // TODO what if some properties have changed on rebirth?
       // not found, then create
       Log.log(
         'Auto Key - Tag not found, will create: ' + tag,
@@ -163,6 +163,8 @@ async function AutoCreateTag (data, connectionNumber, rtDataCollection) {
       newTag.group1 = data?.group1 || AppDefs.AUTOTAG_PREFIX + ':' + connectionNumber   
       newTag.group2 = data?.group2 || ''
       newTag.group3 = data?.group3
+      newTag.kconv1 = data?.kconv1 || 1.0
+      newTag.kconv2 = data?.kconv2 || 0.0
       newTag.value = new Mongo.Double(data.value)
       newTag.valueString = data?.valueString
       newTag.valueJson = data?.valueJson
