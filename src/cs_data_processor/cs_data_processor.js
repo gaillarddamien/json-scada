@@ -30,6 +30,7 @@ const fs = require('fs')
 const { MongoClient, Double, ReadPreference } = require('mongodb')
 const Queue = require('queue-fifo')
 const { setInterval } = require('timers')
+const Long = require('long')
 
 const SoeDataCollectionName = 'soeData'
 const LowestPriorityThatBeeps = 1 // will beep for priorities zero and one
@@ -543,12 +544,12 @@ const pipeline = [
             // start listen to changes
             changeStream.on('change', change => {
               try {
-                if (change.operationType === 'delete') return
+                if (change.operationType === 'delete') return // TODO can never happen?
 
                 let isSOE = false
                 let alarmRange = 0
 
-                if (change.operationType === 'insert') {
+                if (change.operationType === 'insert') { // can never happen ?
                   // document inserted
                   Log.log(
                     'INSERT ' +
@@ -699,6 +700,9 @@ const pipeline = [
                 let valueString =
                   change.updateDescription.updatedFields.sourceDataUpdate
                     ?.valueStringAtSource || ''
+                let valueJson =
+                  change.updateDescription.updatedFields.sourceDataUpdate
+                    ?.valueJsonAtSource || []
                 let alarmed = change.fullDocument.alarmed
 
                 // avoid undefined, null or NaN values
@@ -763,6 +767,7 @@ const pipeline = [
                         ? ' ' + change.fullDocument.unit
                         : '') +
                       txtQualif
+                  valueJson = {s: valueString};
                 } else if (change.fullDocument.type === 'analog') {
                   if (txtQualif != '') txtQualif = ' ' + txtQualif
 
@@ -919,6 +924,36 @@ const pipeline = [
                         ack: 1 // enter as acknowledged as it is not an alarm
                       })
                     }
+                  valueJson = {s: valueString};
+                }
+                else if (change.fullDocument.type === 'json') // or string ??? 
+                {
+                  valueJson = change.updateDescription.updatedFields.sourceDataUpdate.valueJsonAtSource || []  // warning it should have been set already
+
+                  const { kconv1, kconv2 } = change.fullDocument
+                  
+                  let currentTimestamp = change.updateDescription.updatedFields.sourceDataUpdate.timeTagAtSource.getTime()
+
+                  const sampleRate = 400; // 400 ms IS ARBITRARY TODO should have been read from metric/tag property !!!!!!!!!
+                  const newValueJson = []
+                  for (const row of valueJson) {
+                    for (const column in row) {
+                      let v = row[column]
+                      if (Long.isLong(v)) {
+                        v = v.mul(kconv1).add(kconv2) // safe Long object
+                        v = v.toNumber() // warning unsafe number
+                      } else {
+                        // TODO needs to make sur type is numeric!
+                        v = v * kconv1 + kconv2
+                      }
+                      row[column] = v
+                    }
+                    row["timestamp"] = currentTimestamp; // TODO this should not be necessary, based on start date ans sampling rate
+                    newValueJson.push(row)
+                    currentTimestamp += sampleRate
+                  }
+                  valueJson = newValueJson
+                  valueString = JSON.stringify(valueJson)
                 }
 
                 let alarmTime = null
@@ -1022,6 +1057,7 @@ const pipeline = [
                     _id: change.fullDocument._id,
                     value: new Double(value),
                     valueString: valueString,
+                    valueJson: valueJson,
                     ...(change.fullDocument?.type === 'analog' &&
                     insertIntoHistorian
                       ? { historianLastValue: new Double(value) }
@@ -1097,7 +1133,7 @@ const pipeline = [
                           .causeOfTransmissionAtSource === '20'
                           ? '1'
                           : '0', // integrity?
-                      b3 = '0', // reserved
+                      b3 = update.alarmed ? '1':'0', // alarmed
                       b2 = '0', // reserved
                       b1 = '0', // reserved
                       b0 = '0' // reserved
@@ -1110,9 +1146,7 @@ const pipeline = [
                         "'," +
                         value +
                         ',' +
-                        '\'{"s": "' +
-                        valueString +
-                        '"}\',' +
+                        "'" + JSON.stringify(valueJson) + "', " +
                         (update.timeTagAtSource !== null
                           ? "'" +
                             change.updateDescription.updatedFields.sourceDataUpdate.timeTagAtSource.toISOString() +
@@ -1135,6 +1169,7 @@ const pipeline = [
                   // update change.fullDocument with new data just to stringify it and queue update for postgresql update
                   change.fullDocument.value = value
                   change.fullDocument.valueString = valueString
+                  change.fullDocument.valueJson = valueJson
                   change.fullDocument.timeTag = dt
                   change.fullDocument.overflow = overflow
                   change.fullDocument.invalid = invalid
