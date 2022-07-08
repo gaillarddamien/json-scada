@@ -10,6 +10,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "fs": "0.0.1-security",
+    "long": "^5.2.0",
     "mongodb": "^3.6.4",
     "queue-fifo": "^0.2.6"
   }
