@@ -120,13 +120,37 @@ Client user interface can be used on:
 
 -------------------------------------------------------------------
 
-BUILD REQUIREMENTS.
+BUILD REQUIREMENTS:
 
 See official repo:
 * https://github.com/riclolsen/json-scada
+* https://github.com/riclolsen/json-scada/blob/master/docs/install.md#json-scada-processes---build-and-setup
 
 Inkscape+SAGE:
 * See http://wiki.inkscape.org/wiki/index.php/Compiling_Inkscape_on_Windows_with_MSYS2.
+
+-------------------------------------------------------------------
+
+Notes for version 0.24:
+
+* Default login credentials: username=admin password=jsonscada.
+* Fixed text types fields on import query of Excel config sheet.
+* Npm packages updated.
+* Added beep capability to Alarms Viewer.
+* Grafana updated to 9.0.5.
+* Chromium updated to 103.0.5060.134.
+* MongoDB Compass updated to 1.32.5.
+* MongoDB Community Server updated to 6.0.0.
+* Dotnet runtime updated to 6.0.7.
+* Nodejs updated to 16.16.0.
+
+Requirements and recommendations:
+
+* Windows 10/11 64 bits or Server >=2016, Windows PowerShell. At least 10GB of free space in the "C:" drive.
+* Administrative rights. Corporative Windows policies may cause problems with the creation of services and the opening of TCP ports.
+* Free TCP ports 27017, 5432, 80, 8080, 3000, 9000. Other ports may be required for optional services and protocols.
+* If the server already has MongoDB, PostgreSQL, Grafana, Nginx or another webserver, please uninstall, disable or watch out for possible conflicts.
+* Do not update previously installed JSON-SCADA. Please uninstall previous JSON-SCADA versions before installing a new version.
 
 -------------------------------------------------------------------
 
