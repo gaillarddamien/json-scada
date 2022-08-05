@@ -14,6 +14,8 @@ nssm set JSON_SCADA_postgresql Start SERVICE_AUTO_START
 nssm install JSON_SCADA_grafana "C:\json-scada\platform-windows\grafana-runtime\bin\grafana-server.exe"
 nssm set JSON_SCADA_grafana AppDirectory "C:\json-scada\platform-windows\grafana-runtime\bin"
 nssm set JSON_SCADA_grafana AppEnvironmentExtra GF_SERVER_DOMAIN=127.0.0.1 GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:80/grafana/ GF_SERVER_SERVE_FROM_SUB_PATH=true GF_AUTH_PROXY_ENABLED=true GF_AUTH_PROXY_ENABLE_LOGIN_TOKEN=true GF_AUTH_DISABLE_SIGNOUT_MENU=true
+REM nssm set JSON_SCADA_grafana AppStdout "C:\json-scada\log\grafana-stdout.log"
+REM nssm set JSON_SCADA_grafana AppStderr "C:\json-scada\log\grafana-stderr.log"
 nssm set JSON_SCADA_grafana Start SERVICE_AUTO_START
 
 nssm install JSON_SCADA_mongodb "C:\json-scada\platform-windows\mongodb-runtime\bin\mongod.exe" --config  "c:\json-scada\platform-windows\mongodb-conf\mongod.cfg" 
@@ -68,9 +70,12 @@ nssm install JSON_SCADA_alarm_beep  "C:\json-scada\platform-windows\nodejs-runti
 nssm set JSON_SCADA_alarm_beep AppDirectory "C:\json-scada\src\alarm_beep"
 nssm set JSON_SCADA_alarm_beep Start SERVICE_AUTO_START
 
+rem WARNING! This service has no security access control, use with care.
 nssm install JSON_SCADA_config_server_excel  "C:\json-scada\platform-windows\nodejs-runtime\node.exe" "C:\json-scada\src\config_server_for_excel\index.js" 
 nssm set JSON_SCADA_config_server_excel AppDirectory "C:\json-scada\src\config_server_for_excel"
-nssm set JSON_SCADA_config_server_excel Start SERVICE_AUTO_START
+nssm set JSON_SCADA_config_server_excel Start SERVICE_DEMAND_START
+nssm set JSON_SCADA_config_server_excel AppEnvironmentExtra JS_CSEXCEL_IP_BIND=0.0.0.0 JS_CSEXCEL_HTTP_PORT=10001
+rem JS_CSEXCEL_IP_BIND=127.0.0.1 to enable just local access
 
 rem For use with OSHMI HMI Shell
 rem nssm install JSON_SCADA_shell_api  "C:\json-scada\platform-windows\nodejs-runtime\node.exe" "C:\json-scada\src\shell-api\shell-api.js" 
