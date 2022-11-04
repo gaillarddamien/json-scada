@@ -951,16 +951,9 @@ async function processMongoUpdates (clientMongo, collection, jsConfig) {
       // check tag is created, if not found create it
       if (AutoCreateTags) {
         let topicSplit = data.protocolSourceObjectAddress.split('/')
-        if (topicSplit.length > 0) {
-          data.group1 = topicSplit[0]
+        if (topicSplit.length > 0) data.group2 = topicSplit[0]
+        if (topicSplit.length > 1 && topicSplit[0] === SparkplugNS)
           data.group2 = topicSplit[1]
-          data.group3 = topicSplit[2]
-        }
-        if (topicSplit.length > 1 && topicSplit[0] === SparkplugNS) {
-          data.group1 = topicSplit[1]
-          data.group2 = topicSplit[2]
-          data.group3 = topicSplit[3]
-        }
         await AutoTag.AutoCreateTag(data, jsConfig.ConnectionNumber, collection)
       }
 
@@ -1928,10 +1921,6 @@ function queueMetric (metric, deviceLocator, isBirth, templateName) {
       catalogProperties.group3 = metric.properties?.group3?.value || ''
       if ('engUnit' in metric.properties)
         catalogProperties.unit = metric.properties.engUnit?.value || 'units'
-      if ('kconv1' in metric.properties)
-        catalogProperties.kconv1 = parseFloat(metric.properties.kconv1?.value) || 1.0
-      if ('kconv2' in metric.properties)
-        catalogProperties.kconv2 = parseFloat(metric.properties.kconv2?.value) || 0.0
     }
     catalogProperties.commissioningRemarks =
       'Auto created by Sparkplug B driver - ' + new Date().toISOString()
