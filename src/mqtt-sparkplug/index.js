@@ -940,11 +940,18 @@ function getMongoConnectionOptions (configObj) {
   return connOptions
 }
 
+let LOCK = false;
+
 // update queued data to mongodb
 async function processMongoUpdates (clientMongo, collection, jsConfig) {
+  if (LOCK) {
+    // console.log("locked")
+    return
+  }
   let cnt = 0
   if (clientMongo && collection)
     while (!ValuesQueue.isEmpty()) {
+      LOCK = true;
       let data = ValuesQueue.peek()
       ValuesQueue.dequeue()
 
@@ -986,7 +993,7 @@ async function processMongoUpdates (clientMongo, collection, jsConfig) {
         blockedAtSource: false,
         substitutedAtSource: false
       }
-      collection.updateOne(
+      await collection.updateOne(
         {
           protocolSourceConnectionNumber: jsConfig.ConnectionNumber,
           protocolSourceObjectAddress: data.protocolSourceObjectAddress
@@ -996,6 +1003,7 @@ async function processMongoUpdates (clientMongo, collection, jsConfig) {
 
       cnt++
     }
+    LOCK = false;
   if (cnt) Log.log('MongoDB - Updates: ' + cnt)
 }
 
