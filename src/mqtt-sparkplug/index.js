@@ -1951,6 +1951,15 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
       'Auto created by Sparkplug B driver - ' + new Date().toISOString()
   }
 
+  if ('properties' in metric) {
+    // store every sparkplug property, whether on birth or on data
+    catalogProperties.SparkplugProperties = {};
+
+    for (const prop in metric.properties) {
+      catalogProperties.SparkplugProperties[prop] = metric.properties[prop].value;
+    }
+  }
+
   ValuesQueue.enqueue({
     protocolSourceObjectAddress: objectAddress,
     value: value,
