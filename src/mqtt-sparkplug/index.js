@@ -1940,7 +1940,9 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
             catalogProperties.unit = metric.properties[prop].value
             break
           case 'samplingRate':
-            catalogProperties.samplingRate = metric.properties[prop].value
+            if (metric.properties[prop].value > 0) {
+              catalogProperties.samplingRate = metric.properties[prop].value
+            }
             break
         }
       }
