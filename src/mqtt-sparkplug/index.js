@@ -1797,6 +1797,52 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
         }
       }
       break
+    case 'bytes':
+        type = 'json'
+        if ('value' in metric) {
+          let type;
+  
+          if ('properties' in metric) {
+            if ('type' in metric.properties) {
+              type = metric.properties.type.value.toLowerCase()
+            }
+          }
+  
+          let metricName = metric.name;
+          try {
+            // TODO remove this V-MON-specific statement
+            metricName = metric.name.match("Device Sensors/(.+)/Curve/Value")[1]
+          } catch(e) { }
+
+          let v = new Uint8Array(metric.value);
+          switch (type) {
+            case 'uint8':
+              v = new Uint8Array(v.buffer)
+              break
+            case 'int8':
+              v = new Int8Array(v.buffer)
+              break
+            case 'uint16':
+            default:
+              v = new Uint16Array(v.buffer)
+              break
+            case 'int16':
+              v = new Int16Array(v.buffer)
+              break
+            case 'uint32':
+              v = new Uint32Array(v.buffer)
+              break
+            case 'int32':
+              v = new Int32Array(v.buffer)
+              break
+          }
+
+          // TODO use a plain array rather than the convoluted Dataset-like structure
+          // valueJson = Array.from(v)
+          valueJson = Array.from(v).map((cur) => ({[metricName]: cur}))
+          valueString = JSON.stringify(valueJson)
+        }
+        break
     case 'dataset':
       // transform data set in a simpler array of objects with named properties
       type = 'json'
