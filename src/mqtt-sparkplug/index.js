@@ -1981,15 +1981,6 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
           case 'group3':
             catalogProperties[prop] = metric.properties[prop].value
             break
-          case 'engUnit':
-          case 'unit':
-            catalogProperties.unit = metric.properties[prop].value
-            break
-          case 'samplingRate':
-            if (metric.properties[prop].value > 0) {
-              catalogProperties.samplingRate = metric.properties[prop].value
-            }
-            break
         }
       }
     }
@@ -1998,6 +1989,23 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
   }
 
   if ('properties' in metric) {
+    // the following properties may be updated whether on birth or on data
+    for (const prop in metric.properties) {
+      switch(camelCase(prop)) {
+        case 'engUnit':
+        case 'unit':
+          if (metric.properties[prop].value) {
+            catalogProperties.unit = metric.properties[prop].value
+          }
+          break
+        case 'samplingRate':
+          if (metric.properties[prop].value) {
+            catalogProperties.samplingRate = metric.properties[prop].value
+          }
+          break
+      }
+    }
+
     // store every sparkplug property, whether on birth or on data
     catalogProperties.SparkplugProperties = {};
 
