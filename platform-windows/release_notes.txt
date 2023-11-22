@@ -1,6 +1,6 @@
     {json:scada} 
     
-    © 2008-2022* Ricardo L. Olsen 
+    © 2008-2022 Ricardo L. Olsen 
     (https://www.linkedin.com/in/ricardo-olsen/)
 
     This program is free software: you can redistribute it and/or modify
@@ -20,45 +20,45 @@ The system will install to "c:\json-scada\" (on Windows).
 
 Acknowledgements:
 
-  MongoDB* https://github.com/mongodb/mongo, https://www.mongodb.com/
-  PostgreSQL* https://www.postgresql.org/
-  TimescaleDB* https://github.com/timescale/timescaledb, https://www.timescale.com/
-  Grafana* https://github.com/grafana/grafana, https://grafana.com/
-  Lib60870 By MZ Automation* https://github.com/mz-automation/lib60870, https://www.mz-automation.de/
-  ICCP Client by Fernando Covatti* https://github.com/fcovatti/iccp
-  Opendnp3* https://github.com/dnp3/opendnp3
-  PLC4X* https://github.com/apache/plc4x
-  Libplctag* https://github.com/libplctag/libplctag
-  Node-opcua* https://github.com/node-opcua/node-opcua
-  OPC-UA* https://github.com/OPCFoundation/UA-.NETStandard
-  Telegraf* https://github.com/influxdata/telegraf
-  Inkscape* https://inkscape.org
-  Inkscape + SAGE* https://sourceforge.net/projects/sage-scada
-  Inkscape + SAGE (updated)* https://gitlab.com/lvta0909/inkscape
-  Chromium* by "The Chromium Authors"
-  Chromium x86 binaries* http://chromium.woolyss.com/
-  NGINX* http://nginx.org/
-  Node.js* https://nodejs.org/
-  Express* https://expressjs.com/pt-br/
-  Dotnet* https://dotnet.microsoft.com/download
-  Golang* https://golang.org/
+  MongoDB - https://github.com/mongodb/mongo, https://www.mongodb.com/
+  PostgreSQL - https://www.postgresql.org/
+  TimescaleDB - https://github.com/timescale/timescaledb, https://www.timescale.com/
+  Grafana - https://github.com/grafana/grafana, https://grafana.com/
+  Lib60870 By MZ Automation - https://github.com/mz-automation/lib60870, https://www.mz-automation.de/
+  ICCP Client by Fernando Covatti - https://github.com/fcovatti/iccp
+  Opendnp3 - https://github.com/dnp3/opendnp3
+  PLC4X - https://github.com/apache/plc4x
+  Libplctag - https://github.com/libplctag/libplctag
+  Node-opcua - https://github.com/node-opcua/node-opcua
+  OPC-UA - https://github.com/OPCFoundation/UA-.NETStandard
+  Telegraf - https://github.com/influxdata/telegraf
+  Inkscape - https://inkscape.org
+  Inkscape + SAGE - https://sourceforge.net/projects/sage-scada
+  Inkscape + SAGE (updated) - https://gitlab.com/lvta0909/inkscape
+  Chromium by "The Chromium Authors"
+  Chromium x86 binaries - http://chromium.woolyss.com/
+  NGINX - http://nginx.org/
+  Node.js - https://nodejs.org/
+  Express - https://expressjs.com/pt-br/
+  Dotnet - https://dotnet.microsoft.com/download
+  Golang - https://golang.org/
   Open Sans Fonts by Steve Matteson
-  Source Sans Pro by Adobe Systems Incorporated. License* http://scripts.sil.org/OFL
-  Google Fonts* https://fonts.google.com/
-  JQuery* http://jquery.com
-  Shortcut* http://www.openjs.com/scripts/events/keyboard_shortcuts
-  Core JS* http://www.sitepoint.com
-  Modernzr* http://www.modernizr.com
-  Flot* http://www.flotcharts.org
-  Snap SVG* http://snapsvg.io
-  Chroma.js* https://github.com/gka/chroma.js
-  CSS Animation Cheat Sheet* http://www.justinaguilar.com/animations
-  D3JS* http://d3js.org
-  Radar-chart-d3* https://github.com/alangrafu/radar-chart-d3
-  Vega A Visualization Grammar* https://vega.github.io/vega
-  NSSM* The Non-Sucking Service Manager: http://nssm.cc
-  Some icons from* http://keyamoon.com/icomoon and http://raphaeljs.com/icons
-  CSS Loaders from Luke Haas* https://projects.lukehaas.me/css-loaders/
+  Source Sans Pro by Adobe Systems Incorporated. License - http://scripts.sil.org/OFL
+  Google Fonts - https://fonts.google.com/ 
+  JQuery - http://jquery.com
+  Shortcut - http://www.openjs.com/scripts/events/keyboard_shortcuts
+  Core JS - http://www.sitepoint.com
+  Modernzr - http://www.modernizr.com
+  Flot - http://www.flotcharts.org
+  Snap SVG - http://snapsvg.io
+  Chroma.js - https://github.com/gka/chroma.js
+  CSS Animation Cheat Sheet - http://www.justinaguilar.com/animations
+  D3JS - http://d3js.org
+  Radar-chart-d3 - https://github.com/alangrafu/radar-chart-d3
+  Vega A Visualization Grammar - https://vega.github.io/vega
+  NSSM - The Non-Sucking Service Manager: http://nssm.cc
+  Some icons from - http://keyamoon.com/icomoon and http://raphaeljs.com/icons
+  CSS Loaders from Luke Haas - https://projects.lukehaas.me/css-loaders/
   
 -------------------------------------------------------------------
 
@@ -131,6 +131,70 @@ Inkscape+SAGE:
 
 -------------------------------------------------------------------
 
+Notes for version 0.28:
+
+* Default login credentials: username=admin password=jsonscada.
+* Fixed problem with MQTT TLS connections.
+* Inkscape+SAGE: new build based on 1.2-dev (fixed scripts tab).
+* Npm packages updated.
+* Grafana updated to 9.3.1.
+* MongoDB Community Server updated to 6.0.3.
+* MongoDB Compass updated to 1.34.1.
+* Chromium updated to 108.0.5359.99.
+* Telegraf runtime updated to 1.24.4.
+* Dotnet runtime updated to 6.0.11.
+
+Requirements and recommendations:
+
+* Windows 10/11 64 bits or Server >=2016, Windows PowerShell. At least 10GB of free space in the "C:" drive.
+* Administrative rights. Corporative Windows policies may cause problems with the creation of services and the opening of TCP ports.
+* Free TCP ports 27017, 5432, 80, 8080, 3000, 9000. Other ports may be required for optional services and protocols.
+* If the server already has MongoDB, PostgreSQL, Grafana, Nginx or another webserver, please uninstall, disable or watch out for possible conflicts.
+* Do not update previously installed JSON-SCADA. Please uninstall previous JSON-SCADA versions before installing a new version.
+
+-------------------------------------------------------------------
+
+Notes for version 0.27:
+
+* Default login credentials: username=admin password=jsonscada.
+* Npm packages updated.
+* Fixed problem with the scripts tab in the SVG Editor.
+* Dotnet runtime updated to 6.0.10.
+* Grafana updated to 9.2.1.
+* Chromium updated to 106.0.5249.119.
+* MongoDB Community Server updated to 6.0.2.
+* Telegraf runtime updated to 1.24.2.
+
+Requirements and recommendations:
+
+* Windows 10/11 64 bits or Server >=2016, Windows PowerShell. At least 10GB of free space in the "C:" drive.
+* Administrative rights. Corporative Windows policies may cause problems with the creation of services and the opening of TCP ports.
+* Free TCP ports 27017, 5432, 80, 8080, 3000, 9000. Other ports may be required for optional services and protocols.
+* If the server already has MongoDB, PostgreSQL, Grafana, Nginx or another webserver, please uninstall, disable or watch out for possible conflicts.
+* Do not update previously installed JSON-SCADA. Please uninstall previous JSON-SCADA versions before installing a new version.
+
+-------------------------------------------------------------------
+
+Notes for version 0.26:
+
+* Default login credentials: username=admin password=jsonscada.
+* Npm and Dotnet packages updated.
+* Dotnet runtime updated to 6.0.9.
+* Grafana updated to 9.1.6.
+* Chromium updated to 105.0.5195.127.
+* MongoDB Compass updated to 1.33.1.
+* Telegraf runtime updated to 1.24.1.
+
+Requirements and recommendations:
+
+* Windows 10/11 64 bits or Server >=2016, Windows PowerShell. At least 10GB of free space in the "C:" drive.
+* Administrative rights. Corporative Windows policies may cause problems with the creation of services and the opening of TCP ports.
+* Free TCP ports 27017, 5432, 80, 8080, 3000, 9000. Other ports may be required for optional services and protocols.
+* If the server already has MongoDB, PostgreSQL, Grafana, Nginx or another webserver, please uninstall, disable or watch out for possible conflicts.
+* Do not update previously installed JSON-SCADA. Please uninstall previous JSON-SCADA versions before installing a new version.
+
+-------------------------------------------------------------------
+
 Notes for version 0.25:
 
 * Default login credentials: username=admin password=jsonscada.
@@ -138,7 +202,7 @@ Notes for version 0.25:
 * Grafana updated to 9.1.2.
 * Chromium updated to 105.0.5195.54.
 * MongoDB Compass updated to 1.33.0.
-* MongoDB Community Server updated to 6.1.0.
+* MongoDB Community Server updated to 6.0.1.
 * Nodejs reverted to 16.13.2.
 * Telegraf runtime updated to 1.23.4.
 * Dotnet runtime updated to 6.0.8.

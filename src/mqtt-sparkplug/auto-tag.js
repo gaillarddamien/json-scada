@@ -1,7 +1,7 @@
 'use strict'
 
 /*
- * {json:scada} - Copyright (c) 2020-2021 - Ricardo L. Olsen
+ * {json:scada} - Copyright (c) 2020-2023 - Ricardo L. Olsen
  * This file is part of the JSON-SCADA distribution (https://github.com/riclolsen/json-scada).
  *
  * This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ function NewTag () {
     alarmDisabled: false,
     alerted: false,
     alarmed: false,
-    alertedState: '',
+    alertState: '',
     annotation: '',
     commandBlocked: false,
     commandOfSupervised: new Mongo.Double(0.0),
@@ -83,6 +83,7 @@ function NewTag () {
     parcels: null,
     priority: new Mongo.Double(0.0),
     protocolDestinations: null,
+    samplingRate: null,
     sourceDataUpdate: null,
     supervisedOfCommand: new Mongo.Double(0.0),
     substituted: false,
@@ -158,6 +159,10 @@ async function AutoCreateTag (data, connectionNumber, rtDataCollection) {
         newTag.stateTextFalse = "false"
         newTag.stateTextTrue = "true"
       }
+      if (newTag.type === 'json'){
+        newTag.unit = data?.unit || 'units'
+        newTag.samplingRate = data?.samplingRate
+      }
       newTag.description = data?.description
       newTag.ungroupedDescription = data?.ungroupedDescription || data.protocolSourceObjectAddress
       newTag.group1 = data?.group1 || AppDefs.AUTOTAG_PREFIX + ':' + connectionNumber   
@@ -175,9 +180,8 @@ async function AutoCreateTag (data, connectionNumber, rtDataCollection) {
       // console.log('>> Insert ' + tag)
 
       let resIns = await rtDataCollection.insertOne(newTag)
-      // if (resIns.acknowledged) ListCreatedTags.push(tag) // change for mongo driver >= 4.0 
-      if (resIns.insertedCount >= 1) ListCreatedTags.push(tag)
-      else
+      if (resIns.acknowledged) ListCreatedTags.push(tag) // change for mongo driver >= 4.0 
+            else
         Log.log(
           'Auto Key - Error inserting tag : ' + tag,
           Log.levelDetailed

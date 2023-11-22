@@ -10,9 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "fs": "*",
-    "gridfs-stream": "^1.1.1",
-    "jsonpath-plus": "^6.0.1",
-    "mongodb": "^3.6.5",
+    "jsonpath-plus": "^7.2.0",
+    "mongodb": "^5.7.0",
+    "lodash": "^4.17.21",
     "mqtt": "^4.3.6",
     "queue-fifo": "^0.2.6",
     "relaxed-json": "^1.0.3",
