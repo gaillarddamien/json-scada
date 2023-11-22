@@ -961,12 +961,38 @@ async function processMongoUpdates(
           blockedAtSource: false,
           substitutedAtSource: false,
         }
+
+        // update properties when these exist and are not null
+        let updProperties = {}
+        if (data.SparkplugProperties) {
+          updProperties.SparkplugProperties = data.SparkplugProperties
+
+          for (const prop in data.SparkplugProperties) {
+            switch(camelCase(prop)) {
+              case 'engUnit':
+              case 'unit':
+                if (data.SparkplugProperties[prop]) {
+                  updProperties.unit = data.SparkplugProperties[prop]
+                }
+                break
+              case 'samplingRate':
+                if (data.SparkplugProperties[prop]) {
+                  updProperties.samplingRate = data.SparkplugProperties[prop]
+                }
+                break
+            }
+          }
+        }
+
         collection.updateOne(
           {
             protocolSourceConnectionNumber: jsConfig.ConnectionNumber,
             protocolSourceObjectAddress: data.protocolSourceObjectAddress,
           },
-          { $set: { sourceDataUpdate: updTag } }
+          { $set: { 
+              sourceDataUpdate: updTag,
+              ...updProperties,
+           } }
         )
 
         cnt++
@@ -1806,6 +1832,9 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
             if ('type' in metric.properties) {
               type = metric.properties.type.value.toLowerCase()
             }
+            if ('Type' in metric.properties) {
+              type = metric.properties.Type.value.toLowerCase()
+            }
           }
   
           let metricName = metric.name;
@@ -1989,23 +2018,6 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
   }
 
   if ('properties' in metric) {
-    // the following properties may be updated whether on birth or on data
-    for (const prop in metric.properties) {
-      switch(camelCase(prop)) {
-        case 'engUnit':
-        case 'unit':
-          if (metric.properties[prop].value) {
-            catalogProperties.unit = metric.properties[prop].value
-          }
-          break
-        case 'samplingRate':
-          if (metric.properties[prop].value) {
-            catalogProperties.samplingRate = metric.properties[prop].value
-          }
-          break
-      }
-    }
-
     // store every sparkplug property, whether on birth or on data
     catalogProperties.SparkplugProperties = {};
 
