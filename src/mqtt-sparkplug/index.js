@@ -1852,9 +1852,9 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
               v = new Int8Array(v.buffer)
               break
             case 'uint16':
-            default:
               v = new Uint16Array(v.buffer)
               break
+            default:
             case 'int16':
               v = new Int16Array(v.buffer)
               break
