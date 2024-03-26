@@ -921,6 +921,7 @@ const pipeline = [
                     _id: change.fullDocument._id,
                     value: new Double(value),
                     valueString: valueString,
+                    valueJson: valueJson,
                     ...(change.fullDocument?.type === 'analog' &&
                     insertIntoHistorian
                       ? { historianLastValue: new Double(value) }
@@ -1009,13 +1010,9 @@ const pipeline = [
                         "'," +
                         value +
                         ',' +
-                        "'{" +
-                        '"v": ' +
-                        JSON.stringify(valueJson).replaceAll("'", ' ') +
-                        ',' +
-                        '"s": "' +
-                        valueString.replaceAll("'", ' ') +
-                        '"}\',' +
+                        "'" +
+                        JSON.stringify({ v: valueJson, s: valueString }).replaceAll("'", ' ') +
+                        "'," +
                         (update.timeTagAtSource !== null
                           ? "'" +
                             change.updateDescription.updatedFields.sourceDataUpdate.timeTagAtSource.toISOString() +
