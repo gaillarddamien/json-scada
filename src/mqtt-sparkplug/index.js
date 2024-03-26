@@ -1810,6 +1810,17 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
         }
       }
       break
+    case 'bytes':
+      type = 'json'
+      if (!('value' in metric) || metric.value === null) {
+        valueJson = []
+        valueString = JSON.stringify(valueJson)
+      } else {
+        let v = new Uint8Array(metric.value);
+        valueJson = Array.from(v)
+        valueString = JSON.stringify(valueJson)
+      }
+      break
     case 'booleanarray':
     case 'int8array':
     case 'uint8array':
