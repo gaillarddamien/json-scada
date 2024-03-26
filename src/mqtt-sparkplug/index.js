@@ -28,6 +28,7 @@ const Fs = require('fs')
 const { MongoClient, GridFSBucket, Double } = require('mongodb')
 const Queue = require('queue-fifo')
 const { setInterval } = require('timers')
+const Long = require('long')
 const Log = require('./simple-logger')
 const AppDefs = require('./app-defs')
 const LoadConfig = require('./load-config')
@@ -1723,7 +1724,7 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
     valueJson = {},
     type = 'digital',
     invalid = false,
-    timestamp,
+        timestamp,
     timestampGood = true,
     catalogProperties = {},
     objectAddress = null
@@ -1808,7 +1809,7 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
         }
       }
       break
-    case 'dataset':
+        case 'dataset':
       // transform data set in a simpler array of objects with named properties
       type = 'json'
       if ('value' in metric) {
@@ -1950,6 +1951,10 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
     }
     catalogProperties.commissioningRemarks =
       'Auto created by Sparkplug B driver - ' + new Date().toISOString()
+  }
+
+  if (Long.isLong(timestamp)) {
+    timestamp = timestamp.toNumber()
   }
 
   ValuesQueue.enqueue({
