@@ -1810,7 +1810,24 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
         }
       }
       break
-        case 'dataset':
+    case 'booleanarray':
+    case 'int8array':
+    case 'uint8array':
+    case 'int16array':
+    case 'uint16array':
+    case 'int32array':
+    case 'uint32array':
+      type = 'json'
+      if (!('value' in metric) || metric.value === null) {
+        // metric does not have a value
+        valueJson = []
+        valueString = JSON.stringify(valueJson)
+      } else {
+        valueJson = Array.from(metric.value)
+        valueString = JSON.stringify(valueJson)  
+      }
+      break
+    case 'dataset':
       // transform data set in a simpler array of objects with named properties
       type = 'json'
       if ('value' in metric) {
