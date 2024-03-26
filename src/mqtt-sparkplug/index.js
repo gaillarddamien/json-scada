@@ -28,6 +28,7 @@ const Fs = require('fs')
 const { MongoClient, GridFSBucket, Double } = require('mongodb')
 const Queue = require('queue-fifo')
 const { setInterval } = require('timers')
+const Long = require('long')
 const Log = require('./simple-logger')
 const AppDefs = require('./app-defs')
 const LoadConfig = require('./load-config')
@@ -1723,6 +1724,7 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
     valueJson = {},
     type = 'digital',
     invalid = false,
+    isNull = false,
     timestamp,
     timestampGood = true,
     catalogProperties = {},
@@ -1806,6 +1808,34 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
           valueJson = metric.value
           valueString = JSON.stringify(metric.value)
         }
+      }
+      break
+    case 'bytes':
+      type = 'json'
+      if (!('value' in metric) || metric.value === null) {
+        valueJson = []
+        valueString = JSON.stringify(valueJson)
+      } else {
+        let v = new Uint8Array(metric.value);
+        valueJson = Array.from(v)
+        valueString = JSON.stringify(valueJson)
+      }
+      break
+    case 'booleanarray':
+    case 'int8array':
+    case 'uint8array':
+    case 'int16array':
+    case 'uint16array':
+    case 'int32array':
+    case 'uint32array':
+      type = 'json'
+      if (!('value' in metric) || metric.value === null) {
+        // metric does not have a value
+        valueJson = []
+        valueString = JSON.stringify(valueJson)
+      } else {
+        valueJson = Array.from(metric.value)
+        valueString = JSON.stringify(valueJson)  
       }
       break
     case 'dataset':
@@ -1950,6 +1980,10 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
     }
     catalogProperties.commissioningRemarks =
       'Auto created by Sparkplug B driver - ' + new Date().toISOString()
+  }
+
+  if (Long.isLong(timestamp)) {
+    timestamp = timestamp.toNumber()
   }
 
   ValuesQueue.enqueue({
