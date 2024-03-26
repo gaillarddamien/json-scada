@@ -1724,7 +1724,8 @@ function queueMetric(metric, deviceLocator, isBirth, templateName) {
     valueJson = {},
     type = 'digital',
     invalid = false,
-        timestamp,
+    isNull = false,
+    timestamp,
     timestampGood = true,
     catalogProperties = {},
     objectAddress = null
